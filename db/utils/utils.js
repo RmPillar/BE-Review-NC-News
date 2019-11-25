@@ -15,4 +15,13 @@ exports.makeRefObj = list => {
   return reference;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, articleRef) => {
+  const formattedComments = exports.formatDates(comments);
+  formattedComments.forEach(item => {
+    item.article_id = articleRef[item.belongs_to];
+    item.author = item.created_by;
+    delete item.belongs_to;
+    delete item.created_by;
+  });
+  return formattedComments;
+};

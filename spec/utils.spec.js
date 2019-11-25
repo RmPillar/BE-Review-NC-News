@@ -92,7 +92,7 @@ describe('formatDates', () => {
   });
 });
 
-describe.only('makeRefObj', () => {
+describe('makeRefObj', () => {
   it('returns a new object', () => {
     const list = [
       {
@@ -156,4 +156,104 @@ describe.only('makeRefObj', () => {
   });
 });
 
-describe('formatComments', () => {});
+describe.only('formatComments', () => {
+  it('if an empty array is passed, returns empty array', () => {
+    expect(formatComments([])).to.deep.equal([]);
+  });
+  it('does not mutate original array input', () => {
+    const array = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const expected = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const lookupObj = { "They're not exactly dogs, are they?": 9 };
+    formatComments(array, lookupObj);
+    expect(array).to.eql(expected);
+  });
+  it('formats an array containing single object', () => {
+    const array = [
+      {
+        comment_id: 1,
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    const lookupObj = { "They're not exactly dogs, are they?": 9 };
+    const formattedComment = formatComments(array, lookupObj);
+
+    expect(formattedComment[0]).to.deep.include({
+      comment_id: 1,
+      body:
+        "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      article_id: 9,
+      author: 'butter_bridge',
+      votes: 16
+    });
+    expect(formattedComment[0].created_at).to.be.an.instanceof(Date);
+  });
+  it('formats an array containing multiple objects', () => {
+    const array = [
+      {
+        comment_id: 1,
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: 1511354163389
+      },
+      {
+        comment_id: 2,
+        body:
+          'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+        belongs_to: 'Living in the shadow of a great man',
+        created_by: 'butter_bridge',
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const lookupObj = {
+      "They're not exactly dogs, are they?": 9,
+      'Living in the shadow of a great man': 1
+    };
+    const formattedComment = formatComments(array, lookupObj);
+
+    expect(formattedComment[0]).to.deep.include({
+      comment_id: 1,
+      body:
+        "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      article_id: 9,
+      author: 'butter_bridge',
+      votes: 16
+    });
+    expect(formattedComment[0].created_at).to.be.an.instanceof(Date);
+    expect(formattedComment[1]).to.deep.include({
+      comment_id: 2,
+      body:
+        'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+      article_id: 1,
+      author: 'butter_bridge',
+      votes: 14
+    });
+    expect(formattedComment[1].created_at).to.be.an.instanceof(Date);
+  });
+});
