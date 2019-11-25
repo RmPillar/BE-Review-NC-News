@@ -12,4 +12,5 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   console.log('Dropping User Table');
+  return knex.schema.dropTable('users');
 };
