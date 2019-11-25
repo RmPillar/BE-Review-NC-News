@@ -106,6 +106,31 @@ describe('makeRefObj', () => {
     ];
     expect(makeRefObj(list)).to.not.equal(list);
   });
+  it('does not mutate original array', () => {
+    const list = [
+      {
+        title: 'Living in the shadow of a great man',
+        topic: 'mitch',
+        author: 'butter_bridge',
+        body: 'I find this existence challenging',
+        created_at: 1542284514171,
+        votes: 100
+      }
+    ];
+    const expected = [
+      {
+        title: 'Living in the shadow of a great man',
+        topic: 'mitch',
+        author: 'butter_bridge',
+        body: 'I find this existence challenging',
+        created_at: 1542284514171,
+        votes: 100
+      }
+    ];
+
+    formatDates(list);
+    expect(list).to.deep.equal(expected);
+  });
   it('returns an empty object, when passed an empty array', () => {
     const input = [];
     const actual = makeRefObj(input);
@@ -156,7 +181,7 @@ describe('makeRefObj', () => {
   });
 });
 
-describe.only('formatComments', () => {
+describe('formatComments', () => {
   it('if an empty array is passed, returns empty array', () => {
     expect(formatComments([])).to.deep.equal([]);
   });
