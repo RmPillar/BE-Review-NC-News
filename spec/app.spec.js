@@ -7,3 +7,11 @@ chai.use(chaiSorted);
 const request = require('supertest');
 const app = require('../app');
 const client = require('../db');
+
+describe('app', () => {
+  describe('/api', () => {
+    describe('/topics', () => {
+      describe('GET', () => {});
+    });
+  });
+});
