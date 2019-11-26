@@ -107,6 +107,18 @@ describe('app', () => {
               });
           });
         });
+        describe.only('PATCH', () => {
+          it('Status: 200 responds with the updated article when the vote is increased', () => {
+            const updateVote = { inc_vote: 1 };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article[0].votes).to.equal(101);
+              });
+          });
+        });
       });
     });
   });
