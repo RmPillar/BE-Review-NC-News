@@ -11,3 +11,9 @@ exports.createComment = (article_id, body) => {
     .insert(insertion)
     .returning('*');
 };
+
+exports.fetchCommentsByArticleId = article_id => {
+  return connection('comments')
+    .select('*')
+    .where({ article_id });
+};
