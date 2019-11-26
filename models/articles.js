@@ -1,15 +1,19 @@
 const connection = require('../db/connection');
 
 exports.fetchArticleById = article_id => {
-  return connection('articles')
+  const articlePromise = connection('articles')
     .select('*')
-    .where({ article_id })
-    .then(article => {
-      if (article.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: 'Article Not Found'
-        });
-      } else return article;
-    });
+    .where({ article_id });
+  const commentCountPromise = connection('comments')
+    .count('comments as comment_count')
+    .where({ article_id });
+
+  return Promise.all([articlePromise, commentCountPromise]).then(article => {
+    if (article[0].length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: 'Article Not Found'
+      });
+    } else return { ...article[0][0], ...article[1][0] };
+  });
 };

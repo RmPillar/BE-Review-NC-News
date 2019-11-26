@@ -69,10 +69,10 @@ describe('app', () => {
           });
           it('Status: 404 responds with path not found when requesting a user that does not exist', () => {
             return request(app)
-              .get('/api/articles/5000')
+              .get('/api/users/butter_bridge22')
               .expect(404)
               .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('Article Not Found');
+                expect(msg).to.deep.equal('User Not Found');
               });
           });
         });
@@ -86,20 +86,26 @@ describe('app', () => {
               .get('/api/articles/1')
               .expect(200)
               .then(({ body: { article } }) => {
-                expect(article).to.deep.equal([
-                  {
-                    article_id: 1,
-                    title: 'Living in the shadow of a great man',
-                    topic: 'mitch',
-                    author: 'butter_bridge',
-                    body: 'I find this existence challenging',
-                    created_at: '2018-11-15T12:21:54.171Z',
-                    votes: 100
-                  }
-                ]);
+                expect(article).to.deep.equal({
+                  article_id: 1,
+                  title: 'Living in the shadow of a great man',
+                  topic: 'mitch',
+                  author: 'butter_bridge',
+                  body: 'I find this existence challenging',
+                  created_at: '2018-11-15T12:21:54.171Z',
+                  votes: 100,
+                  comment_count: '13'
+                });
               });
           });
-          it('Status: 404 responds with article not found message', () => {});
+          it('Status: 404 responds with article not found message', () => {
+            return request(app)
+              .get('/api/articles/5000')
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Article Not Found');
+              });
+          });
         });
       });
     });
