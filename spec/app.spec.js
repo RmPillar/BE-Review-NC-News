@@ -167,7 +167,7 @@ describe('app', () => {
               });
           });
         });
-        describe('/comments', () => {
+        describe.only('/comments', () => {
           describe('POST', () => {
             it('Status: 201 responds with the posted comment', () => {
               const comment = {
@@ -181,10 +181,10 @@ describe('app', () => {
                 .then(({ body: { comment } }) => {
                   expect(comment[0]).to.deep.include({
                     comment_id: 19,
-                    body: 'This has words and is a comment',
-                    belongs_to: 'Living in the shadow of a great man',
-                    created_by: 'butter_bridge',
-                    votes: 0
+                    author: 'butter_bridge',
+                    article_id: 1,
+                    votes: 0,
+                    body: 'This has words and is a comment'
                   });
                 });
             });
