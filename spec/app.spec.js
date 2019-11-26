@@ -6,7 +6,10 @@ const chaiSorted = require('chai-sorted');
 chai.use(chaiSorted);
 const request = require('supertest');
 const app = require('../app');
-const client = require('../db');
+const connection = require('../db/connection');
+
+beforeEach(() => connection.seed.run());
+after(() => connection.destroy());
 
 describe('app', () => {
   describe('/api', () => {
