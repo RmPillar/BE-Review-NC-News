@@ -106,7 +106,7 @@ describe('app', () => {
                 expect(msg).to.deep.equal('Article Not Found');
               });
           });
-          it.only('Status: 400 responds with bad request error', () => {
+          it('Status: 400 responds with bad request error', () => {
             return request(app)
               .get('/api/articles/id')
               .expect(400)
@@ -137,13 +137,23 @@ describe('app', () => {
               });
           });
           it('Status: 404 responds with article not found message', () => {
-            const updateVote = { inc_vote: -100 };
+            const updateVote = { inc_votes: -100 };
             return request(app)
               .patch('/api/articles/5000')
               .send(updateVote)
               .expect(404)
               .then(({ body: { msg } }) => {
                 expect(msg).to.deep.equal('Article Not Found');
+              });
+          });
+          it('Status: 400 responds with bad request error', () => {
+            const updateVote = { inc_votes: '7' };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Bad Request!!');
               });
           });
           xit('Status: 422 responds with unprocessable entity when body has a key other than inc_vote', () => {
