@@ -49,5 +49,26 @@ describe('app', () => {
         });
       });
     });
+    describe('/users', () => {
+      describe('/username', () => {
+        describe('GET', () => {
+          it('Status: 200 responds with single user', () => {
+            return request(app)
+              .get('/api/users/butter_bridge')
+              .expect(200)
+              .then(({ body: { user } }) => {
+                expect(user).to.deep.equal([
+                  {
+                    username: 'butter_bridge',
+                    name: 'jonny',
+                    avatar_url:
+                      'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                  }
+                ]);
+              });
+          });
+        });
+      });
+    });
   });
 });
