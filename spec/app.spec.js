@@ -188,6 +188,19 @@ describe('app', () => {
                   });
                 });
             });
+            it('Status: 404 responds with article not found when non-existant article id is used', () => {
+              const comment = {
+                username: 'butter_bridge',
+                body: 'This has words and is a comment'
+              };
+              return request(app)
+                .post('/api/articles/5000/comments')
+                .send(comment)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.deep.equal('Bad Request!!');
+                });
+            });
           });
         });
       });
