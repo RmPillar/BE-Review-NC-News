@@ -12,16 +12,6 @@ beforeEach(() => connection.seed.run());
 after(() => connection.destroy());
 
 describe('app', () => {
-  describe('INVALID PATH', () => {
-    it('Status: 404', () => {
-      return request(app)
-        .get('/does-not-exist')
-        .expect(404)
-        .then(({ body: { msg } }) => {
-          expect(msg).to.equal('Path not found!!');
-        });
-    });
-  });
   describe('/api', () => {
     describe('/topics', () => {
       describe('GET', () => {
@@ -63,6 +53,38 @@ describe('app', () => {
                     name: 'jonny',
                     avatar_url:
                       'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                  }
+                ]);
+              });
+          });
+          it('Status: 404 responds with path not found when requesting a user that does not exist', () => {
+            return request(app)
+              .get('/api/users/butter_bridge22')
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('User Not Found');
+              });
+          });
+        });
+      });
+    });
+    describe('/articles', () => {
+      describe('/:article_id', () => {
+        describe.only('GET', () => {
+          it('Status: 200 responds with single article', () => {
+            return request(app)
+              .get('/api/articles/1')
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article).to.deep.equal([
+                  {
+                    article_id: 1,
+                    title: 'Living in the shadow of a great man',
+                    topic: 'mitch',
+                    author: 'butter_bridge',
+                    body: 'I find this existence challenging',
+                    created_at: '2018-11-15T12:21:54.171Z',
+                    votes: 100
                   }
                 ]);
               });
