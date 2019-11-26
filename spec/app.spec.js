@@ -12,6 +12,16 @@ beforeEach(() => connection.seed.run());
 after(() => connection.destroy());
 
 describe('app', () => {
+  describe('INVALID PATH', () => {
+    it('Status: 404', () => {
+      return request(app)
+        .get('/does-not-exist')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('Path not found!!');
+        });
+    });
+  });
   describe('/api', () => {
     describe('/topics', () => {
       describe('GET', () => {
