@@ -10,9 +10,10 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.patchArticleById = (req, res, next) => {
-  const { inc_vote } = req.body;
+  const { inc_votes } = req.body;
   const { article_id } = req.params;
-  updateArticleById(article_id, inc_vote)
+  console.log(inc_votes);
+  updateArticleById(article_id, inc_votes)
     .then(article => {
       res.status(200).send({ article });
     })

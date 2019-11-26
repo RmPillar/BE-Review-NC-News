@@ -18,9 +18,9 @@ exports.fetchArticleById = article_id => {
   });
 };
 
-exports.updateArticleById = (article_id, inc_vote) => {
+exports.updateArticleById = (article_id, inc_votes) => {
   return connection('articles')
-    .increment('votes', inc_vote)
+    .increment('votes', inc_votes)
     .where({ article_id })
     .returning('*')
     .then(article => {

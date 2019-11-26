@@ -106,10 +106,18 @@ describe('app', () => {
                 expect(msg).to.deep.equal('Article Not Found');
               });
           });
+          it.only('Status: 400 responds with bad request error', () => {
+            return request(app)
+              .get('/api/articles/id')
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Bad Request!!');
+              });
+          });
         });
-        describe.only('PATCH', () => {
+        describe('PATCH', () => {
           it('Status: 200 responds with the updated article when the vote is increased', () => {
-            const updateVote = { inc_vote: 1 };
+            const updateVote = { inc_votes: 1 };
             return request(app)
               .patch('/api/articles/1')
               .send(updateVote)
@@ -119,7 +127,7 @@ describe('app', () => {
               });
           });
           it('Status: 200 responds with the updated article when the vote is decreased', () => {
-            const updateVote = { inc_vote: -100 };
+            const updateVote = { inc_votes: -100 };
             return request(app)
               .patch('/api/articles/1')
               .send(updateVote)
@@ -128,7 +136,7 @@ describe('app', () => {
                 expect(article[0].votes).to.equal(0);
               });
           });
-          it.only('Status: 404 responds with article not found message', () => {
+          it('Status: 404 responds with article not found message', () => {
             const updateVote = { inc_vote: -100 };
             return request(app)
               .patch('/api/articles/5000')
@@ -137,6 +145,39 @@ describe('app', () => {
               .then(({ body: { msg } }) => {
                 expect(msg).to.deep.equal('Article Not Found');
               });
+          });
+          xit('Status: 422 responds with unprocessable entity when body has a key other than inc_vote', () => {
+            const updateVote = { something_else: -100 };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Unprocessable Request!!');
+              });
+          });
+        });
+        describe('/comments', () => {
+          describe('POST', () => {
+            it('Status: 201 responds with the posted comment', () => {
+              const comment = {
+                username: 'butter_bridge',
+                body: 'This has words and is a comment'
+              };
+              return request(app)
+                .post('/api/articles/1/comments')
+                .send(comment)
+                .expect(201)
+                .then(({ body: { comment } }) => {
+                  expect(comment[0]).to.deep.include({
+                    comment_id: 19,
+                    body: 'This has words and is a comment',
+                    belongs_to: 'Living in the shadow of a great man',
+                    created_by: 'butter_bridge',
+                    votes: 0
+                  });
+                });
+            });
           });
         });
       });
