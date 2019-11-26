@@ -69,10 +69,10 @@ describe('app', () => {
           });
           it('Status: 404 responds with path not found when requesting a user that does not exist', () => {
             return request(app)
-              .get('/api/users/butter_bridge22')
+              .get('/api/articles/5000')
               .expect(404)
               .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('User Not Found');
+                expect(msg).to.deep.equal('Article Not Found');
               });
           });
         });
@@ -99,6 +99,7 @@ describe('app', () => {
                 ]);
               });
           });
+          it('Status: 404 responds with article not found message', () => {});
         });
       });
     });
