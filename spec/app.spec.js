@@ -118,6 +118,26 @@ describe('app', () => {
                 expect(article[0].votes).to.equal(101);
               });
           });
+          it('Status: 200 responds with the updated article when the vote is decreased', () => {
+            const updateVote = { inc_vote: -100 };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article[0].votes).to.equal(0);
+              });
+          });
+          it.only('Status: 404 responds with article not found message', () => {
+            const updateVote = { inc_vote: -100 };
+            return request(app)
+              .patch('/api/articles/5000')
+              .send(updateVote)
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Article Not Found');
+              });
+          });
         });
       });
     });

@@ -22,5 +22,13 @@ exports.updateArticleById = (article_id, inc_vote) => {
   return connection('articles')
     .increment('votes', inc_vote)
     .where({ article_id })
-    .returning('*');
+    .returning('*')
+    .then(article => {
+      if (article.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Article Not Found'
+        });
+      } else return article;
+    });
 };
