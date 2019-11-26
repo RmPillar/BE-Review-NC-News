@@ -14,7 +14,30 @@ after(() => connection.destroy());
 describe('app', () => {
   describe('/api', () => {
     describe('/topics', () => {
-      describe('GET', () => {});
+      describe('GET', () => {
+        it('Status: 200 responds with all topics in the database', () => {
+          return request(app)
+            .get('/api/topics')
+            .expect(200)
+            .then(({ body: { topics } }) => {
+              expect(topics).to.be.an('array');
+              expect(topics).to.deep.equal([
+                {
+                  description: 'The man, the Mitch, the legend',
+                  slug: 'mitch'
+                },
+                {
+                  description: 'Not dogs',
+                  slug: 'cats'
+                },
+                {
+                  description: 'what books are made of',
+                  slug: 'paper'
+                }
+              ]);
+            });
+        });
+      });
     });
   });
 });
