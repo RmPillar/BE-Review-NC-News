@@ -12,6 +12,16 @@ beforeEach(() => connection.seed.run());
 after(() => connection.destroy());
 
 describe('app', () => {
+  describe('INVALID PATH', () => {
+    it('Status: 404', () => {
+      return request(app)
+        .get('/does-not-exist')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('Path not found!!');
+        });
+    });
+  });
   describe('/api', () => {
     describe('/topics', () => {
       describe('GET', () => {
@@ -70,7 +80,7 @@ describe('app', () => {
     });
     describe('/articles', () => {
       describe('/:article_id', () => {
-        describe.only('GET', () => {
+        describe('GET', () => {
           it('Status: 200 responds with single article', () => {
             return request(app)
               .get('/api/articles/1')
