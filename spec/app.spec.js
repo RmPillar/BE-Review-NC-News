@@ -220,7 +220,7 @@ describe('app', () => {
                   });
                 });
             });
-            it.only('Status: 200 array is ordered by user query', () => {
+            it('Status: 200 array is ordered by user query', () => {
               return request(app)
                 .get('/api/articles/1/comments?sort_by=votes')
                 .expect(200)
@@ -228,6 +228,14 @@ describe('app', () => {
                   expect(comments).to.be.sortedBy('votes', {
                     descending: true
                   });
+                });
+            });
+            it.only('Status: 200 array is ordered by user query', () => {
+              return request(app)
+                .get('/api/articles/1/comments?order=asc')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.be.sortedBy('created_at');
                 });
             });
             it('Status: 404 responds with article not found', () => {

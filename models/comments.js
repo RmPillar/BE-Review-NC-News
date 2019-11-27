@@ -12,11 +12,15 @@ exports.createComment = (article_id, body) => {
     .returning('*');
 };
 
-exports.fetchCommentsByArticleId = (article_id, sort_by = 'created_at') => {
+exports.fetchCommentsByArticleId = (
+  article_id,
+  sort_by = 'created_at',
+  order = 'desc'
+) => {
   return connection('comments')
     .select('*')
     .where({ article_id })
-    .orderBy(sort_by, 'desc')
+    .orderBy(sort_by, order)
     .then(comments => {
       if (comments.length === 0) {
         return Promise.reject({
