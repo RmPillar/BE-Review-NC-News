@@ -22,7 +22,7 @@ describe('app', () => {
         });
     });
   });
-  describe.only('INVALID HTTP METHOD', () => {
+  describe('INVALID HTTP METHOD', () => {
     it('Status: 405', () => {
       const methods = ['post', 'patch', 'put', 'delete'];
       const methodPromises = methods.map(method => {
@@ -371,6 +371,22 @@ describe('app', () => {
                   expect(msg).to.equal('Bad Request!!');
                 });
             });
+          });
+        });
+      });
+    });
+    describe('/comments', () => {
+      describe('/:comment_id', () => {
+        describe.only('PATCH', () => {
+          it('Status: 200 responds with the updated comment', () => {
+            const updateVote = { inc_votes: 1 };
+            return request(app)
+              .patch('/api/comments/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments[0].votes).to.equal(17);
+              });
           });
         });
       });

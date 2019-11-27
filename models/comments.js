@@ -30,3 +30,24 @@ exports.fetchCommentsByArticleId = (
       } else return comments;
     });
 };
+
+exports.updateCommentVote = (comment_id, inc_votes) => {
+  if (typeof inc_votes === 'string') {
+    return Promise.reject({
+      status: 400,
+      msg: 'Bad Request!!'
+    });
+  } else
+    return connection('comments')
+      .increment('votes', inc_votes)
+      .where({ comment_id })
+      .returning('*')
+      .then(comment => {
+        if (comment.length === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: 'Comment Not Found'
+          });
+        } else return comment;
+      });
+};
