@@ -79,7 +79,7 @@ describe('app', () => {
     describe('/articles', () => {
       describe('/:article_id', () => {
         describe('GET', () => {
-          it('Status: 200 responds with single article', () => {
+          it.only('Status: 200 responds with single article', () => {
             return request(app)
               .get('/api/articles/1')
               .expect(200)
@@ -201,7 +201,7 @@ describe('app', () => {
             });
           });
           describe('GET', () => {
-            it.only('Status: 200 responds with an array containing all comments associated with an article_id', () => {
+            it('Status: 200 responds with an array containing all comments associated with an article_id', () => {
               return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
