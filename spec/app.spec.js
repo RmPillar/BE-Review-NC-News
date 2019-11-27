@@ -87,6 +87,40 @@ describe('app', () => {
               expect(articles).to.have.length(12);
             });
         });
+        it('Status: 200 response array has required keys', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[0]).to.contain.keys(
+                'author',
+                'title',
+                'article_id',
+                'topic',
+                'created_at',
+                'votes',
+                'comment_count'
+              );
+            });
+        });
+        it('Status: 200 response array has correct comment count', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[7].comment_count).to.equal('13');
+            });
+        });
+        it.only('Status: 200 articles array is sorted by descending date as default', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.sortedBy('created_at', {
+                descending: true
+              });
+            });
+        });
       });
       describe('/:article_id', () => {
         describe('GET', () => {
