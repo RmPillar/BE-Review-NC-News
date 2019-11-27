@@ -161,6 +161,14 @@ describe('app', () => {
               expect(articles).to.have.length(3);
             });
         });
+        it('Status 200: responds with an empty object if query author has no articles', () => {
+          return request(app)
+            .get('/api/articles?author=lurker')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.deep.equal([]);
+            });
+        });
         it('Status 200: articles are filtered by user topic query', () => {
           return request(app)
             .get('/api/articles?topic=mitch')
@@ -169,6 +177,7 @@ describe('app', () => {
               expect(articles).to.have.length(11);
             });
         });
+
         it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
           return request(app)
             .get('/api/articles?author=butter_bridge1')

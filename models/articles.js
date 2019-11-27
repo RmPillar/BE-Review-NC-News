@@ -6,7 +6,7 @@ exports.fetchArticles = (
   author,
   topic
 ) => {
-  return connection('articles')
+  const articlesPromise = connection('articles')
     .select(
       'articles.author',
       'title',
@@ -22,15 +22,24 @@ exports.fetchArticles = (
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', topic);
     })
-    .orderBy(sort_by, order)
-    .then(articles => {
-      if (articles.length === 0) {
+    .orderBy(sort_by, order);
+
+  const userPromise = connection('users')
+    .select('*')
+    .modify(query => {
+      if (author) query.where('users.username', author);
+    });
+
+  return Promise.all([articlesPromise, userPromise]).then(
+    ([articles, users]) => {
+      if (articles.length === 0 && users.length === 0) {
         return Promise.reject({
           status: 404,
           msg: 'Query Not Found'
         });
       } else return articles;
-    });
+    }
+  );
 };
 
 exports.fetchArticleById = article_id => {
