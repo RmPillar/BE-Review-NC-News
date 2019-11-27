@@ -79,7 +79,7 @@ describe('app', () => {
     describe('/articles', () => {
       describe('/:article_id', () => {
         describe('GET', () => {
-          it.only('Status: 200 responds with single article', () => {
+          it('Status: 200 responds with single article', () => {
             return request(app)
               .get('/api/articles/1')
               .expect(200)
@@ -186,7 +186,7 @@ describe('app', () => {
                   });
                 });
             });
-            it('Status: 400 responds with article not found refenrecning a non-existant article id', () => {
+            it('Status: 400 responds with Bad request when id references a non-existant article id', () => {
               const comment = {
                 username: 'butter_bridge',
                 body: 'This has words and is a comment'
@@ -200,122 +200,22 @@ describe('app', () => {
                 });
             });
           });
-          describe('GET', () => {
+          describe.only('GET', () => {
             it('Status: 200 responds with an array containing all comments associated with an article_id', () => {
               return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.an('array');
-                  expect(comments).to.deep.equal([
-                    {
-                      comment_id: 2,
-                      author: 'butter_bridge',
-                      article_id: 1,
-                      votes: 14,
-                      created_at: '2016-11-22T12:36:03.389Z',
-                      body:
-                        'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.'
-                    },
-                    {
-                      comment_id: 3,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 100,
-                      created_at: '2015-11-23T12:36:03.389Z',
-                      body:
-                        'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.'
-                    },
-                    {
-                      comment_id: 4,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: -100,
-                      created_at: '2014-11-23T12:36:03.389Z',
-                      body:
-                        ' I carry a log — yes. Is it funny to you? It is not to me.'
-                    },
-                    {
-                      comment_id: 5,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2013-11-23T12:36:03.389Z',
-                      body: 'I hate streaming noses'
-                    },
-                    {
-                      comment_id: 6,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2012-11-23T12:36:03.389Z',
-                      body: 'I hate streaming eyes even more'
-                    },
-                    {
-                      comment_id: 7,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2011-11-24T12:36:03.389Z',
-                      body: 'Lobster pot'
-                    },
-                    {
-                      comment_id: 8,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2010-11-24T12:36:03.389Z',
-                      body: 'Delicious crackerbreads'
-                    },
-                    {
-                      comment_id: 9,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2009-11-24T12:36:03.389Z',
-                      body: 'Superficially charming'
-                    },
-                    {
-                      comment_id: 10,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2008-11-24T12:36:03.389Z',
-                      body: 'git push origin master'
-                    },
-                    {
-                      comment_id: 11,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2007-11-25T12:36:03.389Z',
-                      body: 'Ambidextrous marsupial'
-                    },
-                    {
-                      comment_id: 12,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2006-11-25T12:36:03.389Z',
-                      body: 'Massive intercranial brain haemorrhage'
-                    },
-                    {
-                      comment_id: 13,
-                      author: 'icellusedkars',
-                      article_id: 1,
-                      votes: 0,
-                      created_at: '2005-11-25T12:36:03.389Z',
-                      body: 'Fruit pastilles'
-                    },
-                    {
-                      comment_id: 18,
-                      author: 'butter_bridge',
-                      article_id: 1,
-                      votes: 16,
-                      created_at: '2000-11-26T12:36:03.389Z',
-                      body: 'This morning, I showered for nine minutes.'
-                    }
-                  ]);
+                  expect(comments).to.have.length(13);
+                });
+            });
+            it('Status: 404 responds with article not found', () => {
+              return request(app)
+                .get('/api/articles/500/comments')
+                .expect(404)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('Article Not Found');
                 });
             });
           });

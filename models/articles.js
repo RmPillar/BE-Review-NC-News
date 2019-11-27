@@ -8,7 +8,7 @@ exports.fetchArticleById = article_id => {
     .leftJoin('comments', 'articles.article_id', 'comments.article_id')
     .groupBy('articles.article_id')
     .then(article => {
-      if (article[0].length === 0) {
+      if (article.length === 0) {
         return Promise.reject({
           status: 404,
           msg: 'Article Not Found'

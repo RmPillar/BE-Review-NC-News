@@ -15,5 +15,13 @@ exports.createComment = (article_id, body) => {
 exports.fetchCommentsByArticleId = article_id => {
   return connection('comments')
     .select('*')
-    .where({ article_id });
+    .where({ article_id })
+    .then(comments => {
+      if (comments.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Article Not Found'
+        });
+      } else return comments;
+    });
 };
