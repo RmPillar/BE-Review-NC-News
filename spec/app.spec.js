@@ -218,6 +218,14 @@ describe('app', () => {
                   expect(msg).to.equal('Article Not Found');
                 });
             });
+            it('Status: 400 responds with a Bad request when an invalid article_id is requested', () => {
+              return request(app)
+                .get('/api/articles/five/comments')
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('Bad Request!!');
+                });
+            });
           });
         });
       });
