@@ -4,8 +4,9 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handle400s = (err, req, res, next) => {
-  console.log(err);
-  res.status(400).send({ msg: 'Bad Request!!' });
+  const codes = ['42703', '23503', '22P02', '22003'];
+  if (codes.includes(err.code)) res.status(400).send({ msg: 'Bad Request!!' });
+  else next(err);
 };
 
 // error controllers

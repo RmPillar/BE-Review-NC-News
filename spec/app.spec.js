@@ -230,7 +230,7 @@ describe('app', () => {
                   });
                 });
             });
-            it.only('Status: 200 array is ordered by user query', () => {
+            it('Status: 200 array is ordered by user query', () => {
               return request(app)
                 .get('/api/articles/1/comments?order=asc')
                 .expect(200)
@@ -249,6 +249,14 @@ describe('app', () => {
             it('Status: 400 responds with a Bad request when an invalid article_id is requested', () => {
               return request(app)
                 .get('/api/articles/five/comments')
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('Bad Request!!');
+                });
+            });
+            it('Status: 400 responds with bad request when sort_by query has a non-existant column', () => {
+              return request(app)
+                .get('/api/articles/1/comments?sort_by=voted')
                 .expect(400)
                 .then(({ body: { msg } }) => {
                   expect(msg).to.equal('Bad Request!!');
