@@ -111,7 +111,7 @@ describe('app', () => {
               expect(articles[7].comment_count).to.equal('13');
             });
         });
-        it.only('Status: 200 articles array is sorted by descending date as default', () => {
+        it('Status: 200 articles array is sorted by descending date as default', () => {
           return request(app)
             .get('/api/articles/')
             .expect(200)
@@ -119,6 +119,32 @@ describe('app', () => {
               expect(articles).to.be.sortedBy('created_at', {
                 descending: true
               });
+            });
+        });
+        it('Status: 200 articles array sorted by user query', () => {
+          return request(app)
+            .get('/api/articles?sort_by=author')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.sortedBy('author', {
+                descending: true
+              });
+            });
+        });
+        it('Status: 200 articles array ordered by user query', () => {
+          return request(app)
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.sortedBy('created_at');
+            });
+        });
+        it.only('Status: 200 articls are filted by user author query', () => {
+          return request(app)
+            .get('/api/articles?author=butter_bridge')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.have.length(3);
             });
         });
       });
