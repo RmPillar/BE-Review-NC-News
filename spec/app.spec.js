@@ -161,7 +161,7 @@ describe('app', () => {
               expect(articles).to.have.length(3);
             });
         });
-        it('Status 200: responds with an empty object if query author has no articles', () => {
+        it('Status: 200: responds with an empty object if query author has no articles', () => {
           return request(app)
             .get('/api/articles?author=lurker')
             .expect(200)
@@ -169,7 +169,7 @@ describe('app', () => {
               expect(articles).to.deep.equal([]);
             });
         });
-        it('Status 200: articles are filtered by user topic query', () => {
+        it('Status: 200: articles are filtered by user topic query', () => {
           return request(app)
             .get('/api/articles?topic=mitch')
             .expect(200)
@@ -177,7 +177,14 @@ describe('app', () => {
               expect(articles).to.have.length(11);
             });
         });
-
+        it('Status: 200: responds with an empty array if query topic has no articles', () => {
+          return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.deep.equal([]);
+            });
+        });
         it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
           return request(app)
             .get('/api/articles?author=butter_bridge1')
@@ -272,16 +279,6 @@ describe('app', () => {
                 expect(msg).to.deep.equal('Bad Request!!');
               });
           });
-          xit('Status: 422 responds with unprocessable entity when body has a key other than inc_vote', () => {
-            const updateVote = { something_else: -100 };
-            return request(app)
-              .patch('/api/articles/1')
-              .send(updateVote)
-              .expect(422)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('Unprocessable Request!!');
-              });
-          });
         });
         describe('/comments', () => {
           describe('POST', () => {
@@ -317,10 +314,22 @@ describe('app', () => {
                   expect(msg).to.deep.equal('Unprocessable Request!!');
                 });
             });
-            it('Status: 400 responds with Bad request when try to insert non-existant column', () => {
+            it('Status: 400 responds with Bad request when trying to insert non-existant column', () => {
               const comment = {
                 username1: 'butter_bridge',
                 body: 'This has words and is a comment'
+              };
+              return request(app)
+                .post('/api/articles/1/comments')
+                .send(comment)
+                .expect(400)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.deep.equal('Bad Request!!');
+                });
+            });
+            it('Status: 400 responds with Bad request when trying to a column is missing from comment body', () => {
+              const comment = {
+                username: 'butter_bridge'
               };
               return request(app)
                 .post('/api/articles/1/comments')

@@ -27,12 +27,17 @@ exports.fetchArticles = (
   const userPromise = connection('users')
     .select('*')
     .modify(query => {
-      if (author) query.where('users.username', author);
+      if (author) query.where('username', author);
+    });
+  const topicPromise = connection('topics')
+    .select('*')
+    .modify(query => {
+      if (topic) query.where('slug', topic);
     });
 
-  return Promise.all([articlesPromise, userPromise]).then(
-    ([articles, users]) => {
-      if (articles.length === 0 && users.length === 0) {
+  return Promise.all([articlesPromise, userPromise, topicPromise]).then(
+    ([articles, users, topic]) => {
+      if (articles.length === 0 && (users.length === 0 || topic.length === 0)) {
         return Promise.reject({
           status: 404,
           msg: 'Query Not Found'
