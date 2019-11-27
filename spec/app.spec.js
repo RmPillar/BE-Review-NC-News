@@ -200,7 +200,7 @@ describe('app', () => {
                 });
             });
           });
-          describe.only('GET', () => {
+          describe('GET', () => {
             it('Status: 200 responds with an array containing all comments associated with an article_id', () => {
               return request(app)
                 .get('/api/articles/1/comments')
@@ -208,6 +208,26 @@ describe('app', () => {
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.an('array');
                   expect(comments).to.have.length(13);
+                });
+            });
+            it('Status: 200 array is ordered by default by created_at column', () => {
+              return request(app)
+                .get('/api/articles/1/comments')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.be.sortedBy('created_at', {
+                    descending: true
+                  });
+                });
+            });
+            it.only('Status: 200 array is ordered by user query', () => {
+              return request(app)
+                .get('/api/articles/1/comments?sort_by=votes')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.be.sortedBy('votes', {
+                    descending: true
+                  });
                 });
             });
             it('Status: 404 responds with article not found', () => {
