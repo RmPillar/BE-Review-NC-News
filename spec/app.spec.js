@@ -22,6 +22,20 @@ describe('app', () => {
         });
     });
   });
+  describe.only('INVALID HTTP METHOD', () => {
+    it('Status: 405', () => {
+      const methods = ['post', 'patch', 'put', 'delete'];
+      const methodPromises = methods.map(method => {
+        return request(app)
+          [method]('/api/articles')
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('HTTP method not allowed');
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
   describe('/api', () => {
     describe('/topics', () => {
       describe('GET', () => {
@@ -163,7 +177,7 @@ describe('app', () => {
               expect(msg).to.equal('Query Not Found');
             });
         });
-        it.only('Status: 400 responds with Bad REquest if sort_by query references column that does not exist', () => {
+        it('Status: 400 responds with Bad REquest if sort_by query references column that does not exist', () => {
           return request(app)
             .get('/api/articles?sort_by=hkshjkdfs')
             .expect(400)
