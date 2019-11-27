@@ -81,6 +81,6 @@ exports.updateVoteById = (article_id, inc_votes) => {
             status: 404,
             msg: 'Article Not Found'
           });
-        } else return article;
+        } else return article[0];
       });
 };

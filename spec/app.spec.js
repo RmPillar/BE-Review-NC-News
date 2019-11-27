@@ -45,20 +45,8 @@ describe('app', () => {
             .expect(200)
             .then(({ body: { topics } }) => {
               expect(topics).to.be.an('array');
-              expect(topics).to.deep.equal([
-                {
-                  description: 'The man, the Mitch, the legend',
-                  slug: 'mitch'
-                },
-                {
-                  description: 'Not dogs',
-                  slug: 'cats'
-                },
-                {
-                  description: 'what books are made of',
-                  slug: 'paper'
-                }
-              ]);
+              expect(topics).to.have.length(3);
+              expect(topics[0]).to.include.keys('description', 'slug');
             });
         });
       });
@@ -117,14 +105,6 @@ describe('app', () => {
               );
             });
         });
-        it('Status: 200 response array has correct comment count', () => {
-          return request(app)
-            .get('/api/articles/')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles[0].comment_count).to.equal('13');
-            });
-        });
         it('Status: 200 articles array is sorted by descending date as default', () => {
           return request(app)
             .get('/api/articles/')
@@ -133,6 +113,14 @@ describe('app', () => {
               expect(articles).to.be.sortedBy('created_at', {
                 descending: true
               });
+            });
+        });
+        it('Status: 200 response array has correct comment count', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[0].comment_count).to.equal('13');
             });
         });
         it('Status: 200 articles array sorted by user query', () => {
@@ -246,7 +234,7 @@ describe('app', () => {
               .send(updateVote)
               .expect(200)
               .then(({ body: { article } }) => {
-                expect(article[0].votes).to.equal(101);
+                expect(article.votes).to.equal(101);
               });
           });
           it('Status: 200 responds with the updated article when the vote is decreased', () => {
@@ -256,7 +244,7 @@ describe('app', () => {
               .send(updateVote)
               .expect(200)
               .then(({ body: { article } }) => {
-                expect(article[0].votes).to.equal(0);
+                expect(article.votes).to.equal(0);
               });
           });
           it('Status: 404 responds with article not found message', () => {
@@ -292,7 +280,7 @@ describe('app', () => {
                 .send(comment)
                 .expect(201)
                 .then(({ body: { comment } }) => {
-                  expect(comment[0]).to.deep.include({
+                  expect(comment).to.deep.include({
                     comment_id: 19,
                     author: 'butter_bridge',
                     article_id: 1,
@@ -416,7 +404,7 @@ describe('app', () => {
               .send(updateVote)
               .expect(200)
               .then(({ body: { comments } }) => {
-                expect(comments[0].votes).to.equal(17);
+                expect(comments.votes).to.equal(17);
               });
           });
           it('Status: 400 responds with bad request error', () => {

@@ -6,10 +6,10 @@ exports.createComment = (article_id, body) => {
     article_id,
     body: body.body
   };
-
   return connection('comments')
     .insert(insertion)
-    .returning('*');
+    .returning('*')
+    .then(comment => comment[0]);
 };
 
 exports.fetchCommentsByArticleId = (
@@ -48,7 +48,7 @@ exports.updateCommentVote = (comment_id, inc_votes) => {
             status: 404,
             msg: 'Comment Not Found'
           });
-        } else return comment;
+        } else return comment[0];
       });
 };
 
