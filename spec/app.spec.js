@@ -64,7 +64,7 @@ describe('app', () => {
       });
     });
     describe('/users', () => {
-      describe('/username', () => {
+      describe('/:username', () => {
         describe('GET', () => {
           it('Status: 200 responds with single user', () => {
             return request(app)
@@ -253,7 +253,7 @@ describe('app', () => {
                 expect(msg).to.deep.equal('Article Not Found');
               });
           });
-          it('Status: 400 responds with bad request error', () => {
+          it('Status: 400 responds with bad request error when invalid patch data type', () => {
             const updateVote = { inc_votes: '7' };
             return request(app)
               .patch('/api/articles/1')
@@ -302,6 +302,19 @@ describe('app', () => {
               };
               return request(app)
                 .post('/api/articles/5000/comments')
+                .send(comment)
+                .expect(422)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.deep.equal('Unprocessable Request!!');
+                });
+            });
+            it('Status: 400 responds with Bad request when try to insert non-existant column', () => {
+              const comment = {
+                username1: 'butter_bridge',
+                body: 'This has words and is a comment'
+              };
+              return request(app)
+                .post('/api/articles/1/comments')
                 .send(comment)
                 .expect(400)
                 .then(({ body: { msg } }) => {
@@ -398,7 +411,7 @@ describe('app', () => {
                 expect(msg).to.deep.equal('Bad Request!!');
               });
           });
-          it('Status: 404 responds with article not found message', () => {
+          it('Status: 404 responds with comment not found message', () => {
             const updateVote = { inc_votes: -100 };
             return request(app)
               .patch('/api/comments/5000')
@@ -409,11 +422,19 @@ describe('app', () => {
               });
           });
         });
-        describe.only('DELETE', () => {
+        describe('DELETE', () => {
           it('Status: 204 no response when comment is deleted', () => {
             return request(app)
               .delete('/api/comments/1')
               .expect(204);
+          });
+          it('Status: 400 responds with Bad Request message', () => {
+            return request(app)
+              .delete('/api/comments/t')
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Bad Request!!');
+              });
           });
         });
       });

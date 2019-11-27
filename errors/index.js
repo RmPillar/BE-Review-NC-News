@@ -4,8 +4,16 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handle400s = (err, req, res, next) => {
-  const codes = ['42703', '23503', '22P02', '22003'];
+  const codes = ['42703', '22P02', '23502'];
+
   if (codes.includes(err.code)) res.status(400).send({ msg: 'Bad Request!!' });
+  else next(err);
+};
+
+exports.handle422s = (err, req, res, next) => {
+  codes = ['23503'];
+  if (codes.includes(err.code))
+    res.status(422).send({ msg: 'Unprocessable Request!!' });
   else next(err);
 };
 
