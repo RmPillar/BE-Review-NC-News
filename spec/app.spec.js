@@ -77,7 +77,7 @@ describe('app', () => {
       });
     });
     describe('/articles', () => {
-      describe.only('GET', () => {
+      describe('GET', () => {
         it('Status: 200 responds with array of articles', () => {
           return request(app)
             .get('/api/articles/')
@@ -103,12 +103,11 @@ describe('app', () => {
               );
             });
         });
-        it.only('Status: 200 response array has correct comment count', () => {
+        it('Status: 200 response array has correct comment count', () => {
           return request(app)
             .get('/api/articles/')
             .expect(200)
             .then(({ body: { articles } }) => {
-              console.log(articles);
               expect(articles[0].comment_count).to.equal('13');
             });
         });
