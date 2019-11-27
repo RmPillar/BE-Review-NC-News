@@ -77,6 +77,17 @@ describe('app', () => {
       });
     });
     describe('/articles', () => {
+      describe.only('GET', () => {
+        it('Status: 200 responds with array of articles', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.an('array');
+              expect(articles).to.have.length(12);
+            });
+        });
+      });
       describe('/:article_id', () => {
         describe('GET', () => {
           it('Status: 200 responds with single article', () => {
