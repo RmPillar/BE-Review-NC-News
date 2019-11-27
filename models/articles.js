@@ -15,19 +15,6 @@ exports.fetchArticleById = article_id => {
         });
       } else return article[0];
     });
-
-  // const commentCountPromise = connection('comments')
-  //   .count('comments as comment_count')
-  //   .where({ article_id });
-
-  // return Promise.all([articlePromise, commentCountPromise]).then(article => {
-  //   if (article[0].length === 0) {
-  //     return Promise.reject({
-  //       status: 404,
-  //       msg: 'Article Not Found'
-  //     });
-  //   } else return { ...article[0][0], ...article[1][0] };
-  // });
 };
 
 exports.updateVoteById = (article_id, inc_votes) => {
