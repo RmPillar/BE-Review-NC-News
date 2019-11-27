@@ -103,12 +103,13 @@ describe('app', () => {
               );
             });
         });
-        it('Status: 200 response array has correct comment count', () => {
+        it.only('Status: 200 response array has correct comment count', () => {
           return request(app)
             .get('/api/articles/')
             .expect(200)
             .then(({ body: { articles } }) => {
-              expect(articles[7].comment_count).to.equal('13');
+              console.log(articles);
+              expect(articles[0].comment_count).to.equal('13');
             });
         });
         it('Status: 200 articles array is sorted by descending date as default', () => {
@@ -139,12 +140,20 @@ describe('app', () => {
               expect(articles).to.be.sortedBy('created_at');
             });
         });
-        it.only('Status: 200 articls are filted by user author query', () => {
+        it('Status: 200 articles are filted by user author query', () => {
           return request(app)
             .get('/api/articles?author=butter_bridge')
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).to.have.length(3);
+            });
+        });
+        it('Status 200: articles are filtered by user topic query', () => {
+          return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.have.length(11);
             });
         });
       });
