@@ -155,6 +155,22 @@ describe('app', () => {
               expect(articles).to.have.length(11);
             });
         });
+        it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
+          return request(app)
+            .get('/api/articles?author=butter_bridge1')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Query Not Found');
+            });
+        });
+        it.only('Status: 400 responds with Bad REquest if sort_by query references column that does not exist', () => {
+          return request(app)
+            .get('/api/articles?sort_by=hkshjkdfs')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Bad Request!!');
+            });
+        });
       });
       describe('/:article_id', () => {
         describe('GET', () => {

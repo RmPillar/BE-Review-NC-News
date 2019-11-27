@@ -1,6 +1,6 @@
 const connection = require('../db/connection');
 
-exports.fetchAllArticles = (
+exports.fetchArticles = (
   sort_by = 'created_at',
   order = 'desc',
   author,
@@ -22,7 +22,15 @@ exports.fetchAllArticles = (
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', topic);
     })
-    .orderBy(sort_by, order);
+    .orderBy(sort_by, order)
+    .then(articles => {
+      if (articles.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Query Not Found'
+        });
+      } else return articles;
+    });
 };
 
 exports.fetchArticleById = article_id => {
