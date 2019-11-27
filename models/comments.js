@@ -51,3 +51,9 @@ exports.updateCommentVote = (comment_id, inc_votes) => {
         } else return comment;
       });
 };
+
+exports.removeCommentById = comment_id => {
+  return connection('comments')
+    .where({ comment_id })
+    .del();
+};

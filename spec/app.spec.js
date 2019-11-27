@@ -377,7 +377,7 @@ describe('app', () => {
     });
     describe('/comments', () => {
       describe('/:comment_id', () => {
-        describe.only('PATCH', () => {
+        describe('PATCH', () => {
           it('Status: 200 responds with the updated comment', () => {
             const updateVote = { inc_votes: 1 };
             return request(app)
@@ -387,6 +387,33 @@ describe('app', () => {
               .then(({ body: { comments } }) => {
                 expect(comments[0].votes).to.equal(17);
               });
+          });
+          it('Status: 400 responds with bad request error', () => {
+            const updateVote = { inc_votes: '7' };
+            return request(app)
+              .patch('/api/comments/1')
+              .send(updateVote)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Bad Request!!');
+              });
+          });
+          it('Status: 404 responds with article not found message', () => {
+            const updateVote = { inc_votes: -100 };
+            return request(app)
+              .patch('/api/comments/5000')
+              .send(updateVote)
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Comment Not Found');
+              });
+          });
+        });
+        describe.only('DELETE', () => {
+          it('Status: 204 no response when comment is deleted', () => {
+            return request(app)
+              .delete('/api/comments/1')
+              .expect(204);
           });
         });
       });
