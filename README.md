@@ -36,6 +36,7 @@ npm run test-utils
 npm test
 ```
 
+**pg-7.14.0** or greater is required
 
 ## Endpoints
 
