@@ -376,6 +376,22 @@ describe('app', () => {
               expect(articles).to.deep.equal([]);
             });
         });
+        it('Status: 200: articles are limited by user limit query', () => {
+          return request(app)
+            .get('/api/articles?limit=5')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.have.length(5);
+            });
+        });
+        it.only('Status: 200: article page can be specified by user query', () => {
+          return request(app)
+            .get('/api/articles?p=1')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.have.length(2);
+            });
+        });
         it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
           return request(app)
             .get('/api/articles?author=butter_bridge1')
