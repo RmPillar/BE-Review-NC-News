@@ -7,11 +7,41 @@ coming out of Northcoders Leeds
 
 The API can be accessed at https://nc-news-rpillar.herokuapp.com/
 
+## Setup Instructions
+
+1. Clone this repo:
+
+```bash
+git clone https://github.com/RmPillar/BE-Review-NC-News.git
+
+cd BE-Review-NC-News
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Seed the database
+
+```bash
+npm run seed
+```
+
+4. Run tests
+
+```bash
+npm run test-utils
+npm test
+```
+
+
 ## Endpoints
 
 A description of all available endpoints can be found at the **GET** */api* endpoint
 
-    
+
 
 
 
