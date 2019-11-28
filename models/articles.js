@@ -5,7 +5,8 @@ exports.fetchArticles = (
   order = 'desc',
   author,
   topic,
-  limit = 10
+  limit = 10,
+  p = 1
 ) => {
   const articlesPromise = connection('articles')
     .select(
@@ -24,7 +25,8 @@ exports.fetchArticles = (
       if (topic) query.where('articles.topic', topic);
     })
     .orderBy(sort_by, order)
-    .limit(limit);
+    .limit(limit)
+    .offset(p * limit - limit);
 
   const userPromise = connection('users')
     .select('*')
