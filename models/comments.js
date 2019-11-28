@@ -1,15 +1,15 @@
 const connection = require('../db/connection');
 
-exports.createComment = (article_id, body) => {
+exports.createComment = (article_id, { body, username }) => {
   const insertion = {
-    author: body.username,
+    author: username,
     article_id,
-    body: body.body
+    body
   };
   return connection('comments')
     .insert(insertion)
     .returning('*')
-    .then(comment => comment[0]);
+    .then(([comment]) => comment);
 };
 
 exports.fetchCommentsByArticleId = (
@@ -31,7 +31,7 @@ exports.fetchCommentsByArticleId = (
     });
 };
 
-exports.updateCommentVote = (comment_id, inc_votes) => {
+exports.updateCommentVote = (comment_id, inc_votes = 0) => {
   if (typeof inc_votes === 'string') {
     return Promise.reject({
       status: 400,
@@ -42,18 +42,26 @@ exports.updateCommentVote = (comment_id, inc_votes) => {
       .increment('votes', inc_votes)
       .where({ comment_id })
       .returning('*')
-      .then(comment => {
-        if (comment.length === 0) {
+      .then(([comment]) => {
+        if (!comment) {
           return Promise.reject({
             status: 404,
             msg: 'Comment Not Found'
           });
-        } else return comment[0];
+        } else return comment;
       });
 };
 
 exports.removeCommentById = comment_id => {
   return connection('comments')
     .where({ comment_id })
-    .del();
+    .del()
+    .then(delCount => {
+      if (!delCount) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Comment Not Found'
+        });
+      }
+    });
 };

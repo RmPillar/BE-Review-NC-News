@@ -8,7 +8,7 @@ exports.fetchArticles = (
   limit = 10,
   p = 1
 ) => {
-  const articlesPromise = connection('articles')
+  return connection('articles')
     .select(
       'articles.author',
       'title',
@@ -27,18 +27,6 @@ exports.fetchArticles = (
     .orderBy(sort_by, order)
     .limit(limit)
     .offset(p * limit - limit);
-
-  return articlesPromise;
-  // return Promise.all([articlesPromise, userPromise, topicPromise]).then(
-  //   ([articles, users, topic]) => {
-  //     if (articles.length === 0 && (users.length === 0 || topic.length === 0)) {
-  //       return Promise.reject({
-  //         status: 404,
-  //         msg: 'Query Not Found'
-  //       });
-  //     } else return articles;
-  //   }
-  // );
 };
 
 exports.fetchArticleById = article_id => {
@@ -58,7 +46,7 @@ exports.fetchArticleById = article_id => {
     });
 };
 
-exports.updateVoteById = (article_id, inc_votes) => {
+exports.updateVoteById = (article_id, inc_votes = 0) => {
   if (typeof inc_votes === 'string') {
     return Promise.reject({
       status: 400,

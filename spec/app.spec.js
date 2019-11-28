@@ -22,20 +22,6 @@ describe('app', () => {
         });
     });
   });
-  describe('INVALID HTTP METHOD', () => {
-    it('Status: 405', () => {
-      const methods = ['post', 'patch', 'put', 'delete'];
-      const methodPromises = methods.map(method => {
-        return request(app)
-          [method]('/api/articles')
-          .expect(405)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('HTTP method not allowed');
-          });
-      });
-      return Promise.all(methodPromises);
-    });
-  });
   describe('/api', () => {
     describe('/topics', () => {
       describe('GET', () => {
@@ -48,6 +34,20 @@ describe('app', () => {
               expect(topics).to.have.length(3);
               expect(topics[0]).to.include.keys('description', 'slug');
             });
+        });
+      });
+      describe('INVALID HTTP METHOD', () => {
+        it('Status: 405', () => {
+          const methods = ['post', 'patch', 'put', 'delete'];
+          const methodPromises = methods.map(method => {
+            return request(app)
+              [method]('/api/topics')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('HTTP method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
         });
       });
     });
@@ -76,6 +76,20 @@ describe('app', () => {
               });
           });
         });
+        describe('INVALID HTTP METHOD', () => {
+          it('Status: 405', () => {
+            const methods = ['post', 'patch', 'put', 'delete'];
+            const methodPromises = methods.map(method => {
+              return request(app)
+                [method]('/api/users/1')
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('HTTP method not allowed');
+                });
+            });
+            return Promise.all(methodPromises);
+          });
+        });
       });
     });
     describe('/articles', () => {
@@ -101,7 +115,7 @@ describe('app', () => {
                   });
                 });
             });
-            it('Status: 400 responds with Bad request when id references a non-existant article id', () => {
+            it('Status: 422 responds with Bad request when id references a non-existant article id', () => {
               const comment = {
                 username: 'butter_bridge',
                 body: 'This has words and is a comment'
@@ -150,9 +164,9 @@ describe('app', () => {
                   expect(comments).to.have.length(13);
                 });
             });
-            it('Status: 200 array is ordered by default by created_at column', () => {
+            it.only('Status: 200 array is ordered by default by created_at column', () => {
               return request(app)
-                .get('/api/articles/1/comments')
+                .get('/api/articles/2/comments')
                 .expect(200)
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.sortedBy('created_at', {
@@ -201,6 +215,20 @@ describe('app', () => {
                 .then(({ body: { msg } }) => {
                   expect(msg).to.equal('Bad Request!!');
                 });
+            });
+          });
+          describe('INVALID HTTP METHOD', () => {
+            it('Status: 405', () => {
+              const methods = ['patch', 'put', 'delete'];
+              const methodPromises = methods.map(method => {
+                return request(app)
+                  [method]('/api/articles/1/comments')
+                  .expect(405)
+                  .then(({ body: { msg } }) => {
+                    expect(msg).to.equal('HTTP method not allowed');
+                  });
+              });
+              return Promise.all(methodPromises);
             });
           });
         });
@@ -260,6 +288,16 @@ describe('app', () => {
                 expect(article.votes).to.equal(0);
               });
           });
+          it('Status: 200 If updateVote body does not contain inc_vote, article vote is incremented by 0', () => {
+            const updateVote = {};
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article.votes).to.equal(100);
+              });
+          });
           it('Status: 404 responds with article not found message', () => {
             const updateVote = { inc_votes: -100 };
             return request(app)
@@ -281,8 +319,22 @@ describe('app', () => {
               });
           });
         });
+        describe('INVALID HTTP METHOD', () => {
+          it('Status: 405', () => {
+            const methods = ['post', 'put', 'delete'];
+            const methodPromises = methods.map(method => {
+              return request(app)
+                [method]('/api/articles/1')
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('HTTP method not allowed');
+                });
+            });
+            return Promise.all(methodPromises);
+          });
+        });
       });
-      describe.only('GET', () => {
+      describe('GET', () => {
         it('Status: 200 responds with array of articles, which has a default length limit of 10', () => {
           return request(app)
             .get('/api/articles/')
@@ -392,7 +444,7 @@ describe('app', () => {
               expect(articles).to.have.length(2);
             });
         });
-        it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
+        xit('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
           return request(app)
             .get('/api/articles?author=butter_bridge1')
             .expect(404)
@@ -409,6 +461,20 @@ describe('app', () => {
             });
         });
       });
+      describe('INVALID HTTP METHOD', () => {
+        it('Status: 405', () => {
+          const methods = ['post', 'patch', 'put', 'delete'];
+          const methodPromises = methods.map(method => {
+            return request(app)
+              [method]('/api/articles')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('HTTP method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
+      });
     });
     describe('/comments', () => {
       describe('/:comment_id', () => {
@@ -419,8 +485,18 @@ describe('app', () => {
               .patch('/api/comments/1')
               .send(updateVote)
               .expect(200)
-              .then(({ body: { comments } }) => {
-                expect(comments.votes).to.equal(17);
+              .then(({ body: { comment } }) => {
+                expect(comment.votes).to.equal(17);
+              });
+          });
+          it('Status: 200 If updateVote body does not contain inc_vote, comment vote is incremented by 0', () => {
+            const updateVote = {};
+            return request(app)
+              .patch('/api/comments/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { comment } }) => {
+                expect(comment.votes).to.equal(16);
               });
           });
           it('Status: 400 responds with bad request error', () => {
@@ -458,6 +534,28 @@ describe('app', () => {
                 expect(msg).to.deep.equal('Bad Request!!');
               });
           });
+          it('Status: 404 responds with Comment Not Found message when trying to delete comment that does not exist', () => {
+            return request(app)
+              .delete('/api/comments/5000')
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Comment Not Found');
+              });
+          });
+        });
+        describe('INVALID HTTP METHOD', () => {
+          it('Status: 405', () => {
+            const methods = ['post', 'put', 'get'];
+            const methodPromises = methods.map(method => {
+              return request(app)
+                [method]('/api/comments/1')
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('HTTP method not allowed');
+                });
+            });
+            return Promise.all(methodPromises);
+          });
         });
       });
     });
@@ -481,6 +579,20 @@ describe('app', () => {
               'DELETE /api/comments/:comment_id'
             );
           });
+      });
+    });
+    describe('INVALID HTTP METHOD', () => {
+      it('Status: 405', () => {
+        const methods = ['post', 'patch', 'put', 'delete'];
+        const methodPromises = methods.map(method => {
+          return request(app)
+            [method]('/api')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('HTTP method not allowed');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
   });
