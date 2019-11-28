@@ -1,6 +1,6 @@
 exports.formatDates = list => {
-  formattedDates = [];
-  list.map((item, i) => {
+  const formattedDates = [];
+  list.forEach((item, i) => {
     formattedDates.push(Object.assign({}, item));
     formattedDates[i].created_at = new Date(item.created_at);
   });
