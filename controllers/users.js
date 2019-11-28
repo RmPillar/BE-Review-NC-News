@@ -1,10 +1,10 @@
-const { fetchUserById } = require('../models/users');
+const { fetchUserByUsername } = require('../models/users');
 
-exports.getUserById = (req, res, next) => {
+exports.getUserByUsername = (req, res, next) => {
   const { username } = req.params;
-  fetchUserById(username)
+  fetchUserByUsername(username)
     .then(user => {
-      res.status(200).send({ user: user[0] });
+      res.status(200).send({ user });
     })
     .catch(next);
 };
