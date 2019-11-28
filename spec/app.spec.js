@@ -282,14 +282,14 @@ describe('app', () => {
           });
         });
       });
-      describe('GET', () => {
-        it('Status: 200 responds with array of articles', () => {
+      describe.only('GET', () => {
+        it('Status: 200 responds with array of articles, which has a default length limit of 10', () => {
           return request(app)
             .get('/api/articles/')
             .expect(200)
             .then(({ body: { articles } }) => {
               expect(articles).to.be.an('array');
-              expect(articles).to.have.length(12);
+              expect(articles).to.have.length(10);
             });
         });
         it('Status: 200 response array has required keys', () => {
@@ -365,7 +365,7 @@ describe('app', () => {
             .get('/api/articles?topic=mitch')
             .expect(200)
             .then(({ body: { articles } }) => {
-              expect(articles).to.have.length(11);
+              expect(articles).to.have.length(10);
             });
         });
         it('Status: 200: responds with an empty array if query topic has no articles', () => {

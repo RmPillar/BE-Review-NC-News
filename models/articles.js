@@ -22,7 +22,8 @@ exports.fetchArticles = (
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', topic);
     })
-    .orderBy(sort_by, order);
+    .orderBy(sort_by, order)
+    .limit(10);
 
   const userPromise = connection('users')
     .select('*')
