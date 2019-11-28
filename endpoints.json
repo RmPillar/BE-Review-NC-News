@@ -26,11 +26,13 @@
     "exampleResponse": {
       "articles": [
         {
+          "articl_id":1,
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": 1527695953341,
+          "votes":0
         }
       ]
     }
@@ -41,14 +43,85 @@
     "exampleResponse": {
       "articles":
         {
+          "article_id":1,
           "title": "Seafood substitutions are increasing",
           "topic": "cooking",
           "author": "weegembump",
           "body": "Text from the article..",
-          "created_at": 1527695953341
+          "created_at": 1527695953341,
+          "votes":0
         }
       
     }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "increases the number of votes for a particular article and serves the updated article",
+    "queries": [],
+    "exampleBody":{ "inc_votes": 2 },
+    "exampleResponse": {
+      "articles":
+      {
+        "article_id":1,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": 1527695953341,
+        "votes":2
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "creates a new comment referencing the input article_id and serves the new comment",
+    "queries": [],
+    "exampleBody":{
+      "username": "butter_bridge",
+      "body": "This has words and is a comment"
+    },
+    "exampleResponse": {
+      "comment":
+      {
+        "comment_id": 19,
+       " author": "butter_bridge",
+        "article_id": 1,
+        "votes": 0,
+        "body": "This has words and is a comment"
+      }
+      
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves all the comments for a given article_id",
+    "queries": ["sort_by","order"],
+    "exampleResponse": {
+      "comment":
+      [{
+        "comment_id": 1,
+       " author": "butter_bridge",
+        "article_id": 1,
+        "votes": 0,
+        "body": "This has words and is a comment"
+      }]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "increases the number of votes for a particular comment and serves the updated comment",
+    "queries": [],
+    "exampleBody":{ "inc_votes": 5 },
+    "exampleResponse": {
+      "comment":
+      {
+        "comment_id": 1,
+       " author": "butter_bridge",
+        "article_id": 1,
+        "votes": 5,
+        "body": "This has words and is a comment"
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Removes the given comment",
+    "queries": [],
+    "exampleResponse": {}
   }
-  
 }
