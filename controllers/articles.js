@@ -7,14 +7,23 @@ const {
 } = require('../models/articles');
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order, author, topic, limit, p } = req.query;
-  const promiseArr = [fetchArticles(sort_by, order, author, topic, limit, p)];
+  let { sort_by, order, author, topic, limit, p } = req.query;
+  if (!limit) limit = 10;
+  if (!p) p = 1;
+  const articlesQuery = fetchArticles(sort_by, order, author, topic, limit, p);
+  const limitedArticlesQuery = articlesQuery
+    .clone()
+    .limit(limit)
+    .offset(p * limit - limit);
+
+  const promiseArr = [limitedArticlesQuery, articlesQuery];
   if (topic) promiseArr.push(checkTopicExists(topic));
   if (author) promiseArr.push(checkUserExists(author));
 
   Promise.all(promiseArr)
-    .then(articles => {
-      res.status(200).send({ articles: articles[0] });
+    .then(([articles, count]) => {
+      const totalCount = count.length;
+      res.status(200).send({ articles, totalCount });
     })
     .catch(next);
 };

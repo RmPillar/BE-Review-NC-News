@@ -24,9 +24,9 @@ exports.fetchArticles = (
       if (author) query.where('articles.author', author);
       if (topic) query.where('articles.topic', topic);
     })
-    .orderBy(sort_by, order)
-    .limit(limit)
-    .offset(p * limit - limit);
+    .orderBy(sort_by, order);
+  // .limit(limit)
+  // .offset(p * limit - limit);
 };
 
 exports.fetchArticleById = article_id => {

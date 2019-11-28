@@ -368,6 +368,16 @@ describe('app', () => {
               );
             });
         });
+        it('Status: 200 response has a totalCount key which displays the total number of articles before the limit is applied', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles, totalCount } }) => {
+              expect(articles).to.be.an('array');
+              expect(articles).to.have.length(10);
+              expect(totalCount).to.equal(12);
+            });
+        });
         it('Status: 200 articles array is sorted by descending date as default', () => {
           return request(app)
             .get('/api/articles/')
