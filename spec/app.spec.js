@@ -37,28 +37,6 @@ describe('app', () => {
     });
   });
   describe('/api', () => {
-    describe('GET', () => {
-      it.only('Status: 200 responds with all possible endpoints', () => {
-        return request(app)
-          .get('/api')
-          .expect(200)
-          .then(({ body: { endPoints } }) => {
-            expect(endPoints).to.be.an('object');
-            expect(endPoints).to.include.keys(
-              'GET /api',
-              'GET /api/topics',
-              'GET /api/users/:username',
-              'GET /api/articles',
-              'GET /api/articles/:article_id',
-              'PATCH /api/articles/:article_id',
-              'POST /api/articles/:article_id/comments',
-              'GET /api/articles/:article_id/comments',
-              'PATCH /api/comments/:comment_id',
-              'DELETE /api/comments/:comment_id'
-            );
-          });
-      });
-    });
     describe('/topics', () => {
       describe('GET', () => {
         it('Status: 200 responds with all topics in the database', () => {
@@ -101,195 +79,7 @@ describe('app', () => {
       });
     });
     describe('/articles', () => {
-      describe('GET', () => {
-        it('Status: 200 responds with array of articles', () => {
-          return request(app)
-            .get('/api/articles/')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.be.an('array');
-              expect(articles).to.have.length(12);
-            });
-        });
-        it('Status: 200 response array has required keys', () => {
-          return request(app)
-            .get('/api/articles/')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles[0]).to.contain.keys(
-                'author',
-                'title',
-                'article_id',
-                'topic',
-                'created_at',
-                'votes',
-                'comment_count'
-              );
-            });
-        });
-        it('Status: 200 articles array is sorted by descending date as default', () => {
-          return request(app)
-            .get('/api/articles/')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.be.sortedBy('created_at', {
-                descending: true
-              });
-            });
-        });
-        it('Status: 200 response array has correct comment count', () => {
-          return request(app)
-            .get('/api/articles/')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles[0].comment_count).to.equal('13');
-            });
-        });
-        it('Status: 200 articles array sorted by user query', () => {
-          return request(app)
-            .get('/api/articles?sort_by=author')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.be.sortedBy('author', {
-                descending: true
-              });
-            });
-        });
-        it('Status: 200 articles array ordered by user query', () => {
-          return request(app)
-            .get('/api/articles?order=asc')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.be.sortedBy('created_at');
-            });
-        });
-        it('Status: 200 articles are filted by user author query', () => {
-          return request(app)
-            .get('/api/articles?author=butter_bridge')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.have.length(3);
-            });
-        });
-        it('Status: 200: responds with an empty object if query author has no articles', () => {
-          return request(app)
-            .get('/api/articles?author=lurker')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.deep.equal([]);
-            });
-        });
-        it('Status: 200: articles are filtered by user topic query', () => {
-          return request(app)
-            .get('/api/articles?topic=mitch')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.have.length(11);
-            });
-        });
-        it('Status: 200: responds with an empty array if query topic has no articles', () => {
-          return request(app)
-            .get('/api/articles?topic=paper')
-            .expect(200)
-            .then(({ body: { articles } }) => {
-              expect(articles).to.deep.equal([]);
-            });
-        });
-        it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
-          return request(app)
-            .get('/api/articles?author=butter_bridge1')
-            .expect(404)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal('Query Not Found');
-            });
-        });
-        it('Status: 400 responds with Bad REquest if sort_by query references column that does not exist', () => {
-          return request(app)
-            .get('/api/articles?sort_by=hkshjkdfs')
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal('Bad Request!!');
-            });
-        });
-      });
       describe('/:article_id', () => {
-        describe('GET', () => {
-          it('Status: 200 responds with single article', () => {
-            return request(app)
-              .get('/api/articles/1')
-              .expect(200)
-              .then(({ body: { article } }) => {
-                expect(article).to.deep.equal({
-                  article_id: 1,
-                  title: 'Living in the shadow of a great man',
-                  topic: 'mitch',
-                  author: 'butter_bridge',
-                  body: 'I find this existence challenging',
-                  created_at: '2018-11-15T12:21:54.171Z',
-                  votes: 100,
-                  comment_count: '13'
-                });
-              });
-          });
-          it('Status: 404 responds with article not found message', () => {
-            return request(app)
-              .get('/api/articles/5000')
-              .expect(404)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('Article Not Found');
-              });
-          });
-          it('Status: 400 responds with bad request error', () => {
-            return request(app)
-              .get('/api/articles/id')
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('Bad Request!!');
-              });
-          });
-        });
-        describe('PATCH', () => {
-          it('Status: 200 responds with the updated article when the vote is increased', () => {
-            const updateVote = { inc_votes: 1 };
-            return request(app)
-              .patch('/api/articles/1')
-              .send(updateVote)
-              .expect(200)
-              .then(({ body: { article } }) => {
-                expect(article.votes).to.equal(101);
-              });
-          });
-          it('Status: 200 responds with the updated article when the vote is decreased', () => {
-            const updateVote = { inc_votes: -100 };
-            return request(app)
-              .patch('/api/articles/1')
-              .send(updateVote)
-              .expect(200)
-              .then(({ body: { article } }) => {
-                expect(article.votes).to.equal(0);
-              });
-          });
-          it('Status: 404 responds with article not found message', () => {
-            const updateVote = { inc_votes: -100 };
-            return request(app)
-              .patch('/api/articles/5000')
-              .send(updateVote)
-              .expect(404)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('Article Not Found');
-              });
-          });
-          it('Status: 400 responds with bad request error when invalid patch data type', () => {
-            const updateVote = { inc_votes: '7' };
-            return request(app)
-              .patch('/api/articles/1')
-              .send(updateVote)
-              .expect(400)
-              .then(({ body: { msg } }) => {
-                expect(msg).to.deep.equal('Bad Request!!');
-              });
-          });
-        });
         describe('/comments', () => {
           describe('POST', () => {
             it('Status: 201 responds with the posted comment', () => {
@@ -414,6 +204,194 @@ describe('app', () => {
             });
           });
         });
+        describe('GET', () => {
+          it('Status: 200 responds with single article', () => {
+            return request(app)
+              .get('/api/articles/1')
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article).to.deep.equal({
+                  article_id: 1,
+                  title: 'Living in the shadow of a great man',
+                  topic: 'mitch',
+                  author: 'butter_bridge',
+                  body: 'I find this existence challenging',
+                  created_at: '2018-11-15T12:21:54.171Z',
+                  votes: 100,
+                  comment_count: '13'
+                });
+              });
+          });
+          it('Status: 404 responds with article not found message', () => {
+            return request(app)
+              .get('/api/articles/5000')
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Article Not Found');
+              });
+          });
+          it('Status: 400 responds with bad request error', () => {
+            return request(app)
+              .get('/api/articles/id')
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Bad Request!!');
+              });
+          });
+        });
+        describe('PATCH', () => {
+          it('Status: 200 responds with the updated article when the vote is increased', () => {
+            const updateVote = { inc_votes: 1 };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article.votes).to.equal(101);
+              });
+          });
+          it('Status: 200 responds with the updated article when the vote is decreased', () => {
+            const updateVote = { inc_votes: -100 };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(200)
+              .then(({ body: { article } }) => {
+                expect(article.votes).to.equal(0);
+              });
+          });
+          it('Status: 404 responds with article not found message', () => {
+            const updateVote = { inc_votes: -100 };
+            return request(app)
+              .patch('/api/articles/5000')
+              .send(updateVote)
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Article Not Found');
+              });
+          });
+          it('Status: 400 responds with bad request error when invalid patch data type', () => {
+            const updateVote = { inc_votes: '7' };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(updateVote)
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.deep.equal('Bad Request!!');
+              });
+          });
+        });
+      });
+      describe('GET', () => {
+        it('Status: 200 responds with array of articles', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.an('array');
+              expect(articles).to.have.length(12);
+            });
+        });
+        it('Status: 200 response array has required keys', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[0]).to.contain.keys(
+                'author',
+                'title',
+                'article_id',
+                'topic',
+                'created_at',
+                'votes',
+                'comment_count'
+              );
+            });
+        });
+        it('Status: 200 articles array is sorted by descending date as default', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.sortedBy('created_at', {
+                descending: true
+              });
+            });
+        });
+        it('Status: 200 response array has correct comment count', () => {
+          return request(app)
+            .get('/api/articles/')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles[0].comment_count).to.equal('13');
+            });
+        });
+        it('Status: 200 articles array sorted by user query', () => {
+          return request(app)
+            .get('/api/articles?sort_by=author')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.sortedBy('author', {
+                descending: true
+              });
+            });
+        });
+        it('Status: 200 articles array ordered by user query', () => {
+          return request(app)
+            .get('/api/articles?order=asc')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.be.sortedBy('created_at');
+            });
+        });
+        it('Status: 200 articles are filted by user author query', () => {
+          return request(app)
+            .get('/api/articles?author=butter_bridge')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.have.length(3);
+            });
+        });
+        it('Status: 200: responds with an empty object if query author has no articles', () => {
+          return request(app)
+            .get('/api/articles?author=lurker')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.deep.equal([]);
+            });
+        });
+        it('Status: 200: articles are filtered by user topic query', () => {
+          return request(app)
+            .get('/api/articles?topic=mitch')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.have.length(11);
+            });
+        });
+        it('Status: 200: responds with an empty array if query topic has no articles', () => {
+          return request(app)
+            .get('/api/articles?topic=paper')
+            .expect(200)
+            .then(({ body: { articles } }) => {
+              expect(articles).to.deep.equal([]);
+            });
+        });
+        it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
+          return request(app)
+            .get('/api/articles?author=butter_bridge1')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Query Not Found');
+            });
+        });
+        it('Status: 400 responds with Bad REquest if sort_by query references column that does not exist', () => {
+          return request(app)
+            .get('/api/articles?sort_by=hkshjkdfs')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('Bad Request!!');
+            });
+        });
       });
     });
     describe('/comments', () => {
@@ -465,6 +443,28 @@ describe('app', () => {
               });
           });
         });
+      });
+    });
+    describe('GET', () => {
+      it('Status: 200 responds with all possible endpoints', () => {
+        return request(app)
+          .get('/api')
+          .expect(200)
+          .then(({ body: { endPoints } }) => {
+            expect(endPoints).to.be.an('object');
+            expect(endPoints).to.include.keys(
+              'GET /api',
+              'GET /api/topics',
+              'GET /api/users/:username',
+              'GET /api/articles',
+              'GET /api/articles/:article_id',
+              'PATCH /api/articles/:article_id',
+              'POST /api/articles/:article_id/comments',
+              'GET /api/articles/:article_id/comments',
+              'PATCH /api/comments/:comment_id',
+              'DELETE /api/comments/:comment_id'
+            );
+          });
       });
     });
   });
