@@ -37,6 +37,28 @@ describe('app', () => {
     });
   });
   describe('/api', () => {
+    describe('GET', () => {
+      it.only('Status: 200 responds with all possible endpoints', () => {
+        return request(app)
+          .get('/api')
+          .expect(200)
+          .then(({ body: { endPoints } }) => {
+            expect(endPoints).to.be.an('object');
+            expect(endPoints).to.include.keys(
+              'GET /api',
+              'GET /api/topics',
+              'GET /api/users/:username',
+              'GET /api/articles',
+              'GET /api/articles/:article_id',
+              'PATCH /api/articles/:article_id',
+              'POST /api/articles/:article_id/comments',
+              'GET /api/articles/:article_id/comments',
+              'PATCH /api/comments/:comment_id',
+              'DELETE /api/comments/:comment_id'
+            );
+          });
+      });
+    });
     describe('/topics', () => {
       describe('GET', () => {
         it('Status: 200 responds with all topics in the database', () => {
