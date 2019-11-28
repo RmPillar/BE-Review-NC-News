@@ -28,27 +28,17 @@ exports.fetchArticles = (
     .limit(limit)
     .offset(p * limit - limit);
 
-  const userPromise = connection('users')
-    .select('*')
-    .modify(query => {
-      if (author) query.where('username', author);
-    });
-  const topicPromise = connection('topics')
-    .select('*')
-    .modify(query => {
-      if (topic) query.where('slug', topic);
-    });
-
-  return Promise.all([articlesPromise, userPromise, topicPromise]).then(
-    ([articles, users, topic]) => {
-      if (articles.length === 0 && (users.length === 0 || topic.length === 0)) {
-        return Promise.reject({
-          status: 404,
-          msg: 'Query Not Found'
-        });
-      } else return articles;
-    }
-  );
+  return articlesPromise;
+  // return Promise.all([articlesPromise, userPromise, topicPromise]).then(
+  //   ([articles, users, topic]) => {
+  //     if (articles.length === 0 && (users.length === 0 || topic.length === 0)) {
+  //       return Promise.reject({
+  //         status: 404,
+  //         msg: 'Query Not Found'
+  //       });
+  //     } else return articles;
+  //   }
+  // );
 };
 
 exports.fetchArticleById = article_id => {
@@ -87,4 +77,32 @@ exports.updateVoteById = (article_id, inc_votes) => {
           });
         } else return article[0];
       });
+};
+
+exports.checkUserExists = author => {
+  connection('users')
+    .select('*')
+    .modify(query => {
+      if (author) query.where('username', author);
+    })
+    .then(([author]) => {
+      if (!author) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Author Not Found'
+        });
+      }
+    });
+};
+
+exports.checkTopicExists = topic => {
+  connection('topics')
+    .select('*')
+    .modify(query => {
+      if (topic) query.where('slug', topic);
+    })
+    .then(topic => {
+      if (!topic)
+        return Promise.reject({ status: 404, msg: 'Topic Not Found' });
+    });
 };
