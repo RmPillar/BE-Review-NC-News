@@ -68,7 +68,7 @@ exports.updateVoteById = (article_id, inc_votes = 0) => {
 };
 
 exports.checkUserExists = author => {
-  connection('users')
+  return connection('users')
     .select('*')
     .modify(query => {
       if (author) query.where('username', author);
@@ -84,7 +84,7 @@ exports.checkUserExists = author => {
 };
 
 exports.checkTopicExists = topic => {
-  connection('topics')
+  return connection('topics')
     .select('*')
     .modify(query => {
       if (topic) query.where('slug', topic);

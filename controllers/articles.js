@@ -8,11 +8,11 @@ const {
 
 exports.getArticles = (req, res, next) => {
   const { sort_by, order, author, topic, limit, p } = req.query;
-  Promise.all(
-    [fetchArticles(sort_by, order, author, topic, limit, p)],
-    checkTopicExists(topic),
-    checkUserExists(author)
-  )
+  const promiseArr = [fetchArticles(sort_by, order, author, topic, limit, p)];
+  if (topic) promiseArr.push(checkTopicExists(topic));
+  if (author) promiseArr.push(checkUserExists(author));
+
+  Promise.all(promiseArr)
     .then(articles => {
       res.status(200).send({ articles: articles[0] });
     })

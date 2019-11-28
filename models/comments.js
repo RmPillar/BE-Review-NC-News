@@ -20,15 +20,7 @@ exports.fetchCommentsByArticleId = (
   return connection('comments')
     .select('*')
     .where({ article_id })
-    .orderBy(sort_by, order)
-    .then(comments => {
-      if (comments.length === 0) {
-        return Promise.reject({
-          status: 404,
-          msg: 'Article Not Found'
-        });
-      } else return comments;
-    });
+    .orderBy(sort_by, order);
 };
 
 exports.updateCommentVote = (comment_id, inc_votes = 0) => {
@@ -61,6 +53,20 @@ exports.removeCommentById = comment_id => {
         return Promise.reject({
           status: 404,
           msg: 'Comment Not Found'
+        });
+      }
+    });
+};
+
+exports.checkArticleExists = article_id => {
+  return connection('articles')
+    .select('*')
+    .where({ article_id })
+    .then(([author]) => {
+      if (!author) {
+        return Promise.reject({
+          status: 404,
+          msg: 'Article Not Found'
         });
       }
     });

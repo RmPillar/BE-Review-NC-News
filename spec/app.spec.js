@@ -164,14 +164,22 @@ describe('app', () => {
                   expect(comments).to.have.length(13);
                 });
             });
-            it.only('Status: 200 array is ordered by default by created_at column', () => {
+            it('Status: 200 array is ordered by default by created_at column', () => {
               return request(app)
-                .get('/api/articles/2/comments')
+                .get('/api/articles/1/comments')
                 .expect(200)
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.sortedBy('created_at', {
                     descending: true
                   });
+                });
+            });
+            it('Status: 200 article with no comments responds with empty array', () => {
+              return request(app)
+                .get('/api/articles/2/comments')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.have.length(0);
                 });
             });
             it('Status: 200 array is ordered by user query', () => {
@@ -444,12 +452,12 @@ describe('app', () => {
               expect(articles).to.have.length(2);
             });
         });
-        xit('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
+        it('Status: 404 responds with Query Not Found if user query references author or topic that does not exist', () => {
           return request(app)
             .get('/api/articles?author=butter_bridge1')
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal('Query Not Found');
+              expect(msg).to.equal('Author Not Found');
             });
         });
         it('Status: 400 responds with Bad REquest if sort_by query references column that does not exist', () => {
