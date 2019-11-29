@@ -155,13 +155,13 @@ describe('app', () => {
             });
           });
           describe('GET', () => {
-            it('Status: 200 responds with an array containing all comments associated with an article_id', () => {
+            it('Status: 200 responds with an array containing all comments associated with an article_id, which has a default limit of 10', () => {
               return request(app)
                 .get('/api/articles/1/comments')
                 .expect(200)
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.an('array');
-                  expect(comments).to.have.length(13);
+                  expect(comments).to.have.length(10);
                 });
             });
             it('Status: 200 array is ordered by default by created_at column', () => {
@@ -198,6 +198,23 @@ describe('app', () => {
                 .expect(200)
                 .then(({ body: { comments } }) => {
                   expect(comments).to.be.sortedBy('created_at');
+                });
+            });
+            it('Status: 200 array is limited by a limit query', () => {
+              return request(app)
+                .get('/api/articles/1/comments?limit=5')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.be.an('array');
+                  expect(comments).to.have.length(5);
+                });
+            });
+            it('Status: 200 comment page can be specified by user query', () => {
+              return request(app)
+                .get('/api/articles/1/comments?p=2')
+                .expect(200)
+                .then(({ body: { comments } }) => {
+                  expect(comments).to.have.length(3);
                 });
             });
             it('Status: 404 responds with article not found', () => {

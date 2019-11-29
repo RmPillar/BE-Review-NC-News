@@ -15,12 +15,16 @@ exports.createComment = (article_id, { body, username }) => {
 exports.fetchCommentsByArticleId = (
   article_id,
   sort_by = 'created_at',
-  order = 'desc'
+  order = 'desc',
+  limit = 10,
+  p = 1
 ) => {
   return connection('comments')
     .select('*')
     .where({ article_id })
-    .orderBy(sort_by, order);
+    .orderBy(sort_by, order)
+    .limit(limit)
+    .offset(p * limit - limit);
 };
 
 exports.updateCommentVote = (comment_id, inc_votes = 0) => {
